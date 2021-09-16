@@ -22,3 +22,13 @@ id <- as.data.frame(test_school[1])
 id2 <- as.data.frame(test_school[2])
 
 df <- bind_cols(id, id2)
+
+#check out stuff in table
+school_data <- NULL
+for (i in 1:length(test_school)){
+  int <- as.data.frame(test_school[i])
+  school_data <- bind_cols(school_data, int)
+  assign("school_data", school_data)
+}
+
+names(school_data)
