@@ -9,19 +9,29 @@ httr::GET(test)
 key <- "UL77gEnBSo166x5rDu9FG3Ao3MOBvOG879UqYQYq"
 url <- 'https://gs-api.greatschools.org/nearby-schools?lat=37.7940627&lon=-122.2680029&limit=3&distance=5'
 
+
+
 resp <- httr::GET(url, add_headers("X-API-Key " = key))
 
 result <- httr::content(resp, as = "parsed")
 
 test <- result$schools
 
-test_school <- test[[2]]
+null_NA <- function(x) {
+  x[sapply(x, is.null)] <- NA
+  return(x)
+}
 
-id <- as.data.frame(test_school[1])
+test <- lapply(test, null_NA)
 
-id2 <- as.data.frame(test_school[2])
+data_raw <- enframe(unlist(test))
 
-df <- bind_cols(id, id2)
+data_tidy <- tidyr::pivot_wider(data_raw, names_from = name, values_from = value, values_fill = NA)
+
+data_spread <- data_raw %>%
+  tidyr::spread(name)
+  
+
 
 #check out stuff in table
 school_data <- NULL
@@ -32,3 +42,9 @@ for (i in 1:length(test_school)){
 }
 
 names(school_data)
+id[1,1]
+
+subratings <- paste0('https://gs-api.greatschools.org/schools/',id[1,1],'/subratings')
+detail <- httr::GET(subratings, add_headers("X-API-Key " = key))
+detail <- httr::content(detail, as = "raw")
+
