@@ -1,9 +1,11 @@
-nearby_schools <- function(lat = 37.7940627, lon = -122.2680029, radius = 5, limit = 10){
+nearby_schools <- function(lat = 40.4766772, lon = -106.8583795, radius = 5, limit = 10){
   
+  library(tidyverse)
+  library(httr)
   key <- "UL77gEnBSo166x5rDu9FG3Ao3MOBvOG879UqYQYq"
   url <- paste0('https://gs-api.greatschools.org/nearby-schools?lat=',lat,"&lon=",lon,"&limit=",limit,"&distance=",radius)
   
-  resp <- httr::GET(url, add_headers("X-API-Key " = key))
+  resp <- httr::GET(url, httr::add_headers("X-API-Key " = key))
   result <- httr::content(resp, as = "parsed")
   
   schools <- result$schools
@@ -30,4 +32,4 @@ nearby_schools <- function(lat = 37.7940627, lon = -122.2680029, radius = 5, lim
   return(df)
 }
 
-# school_test <- nearby_schools()
+school_test <- nearby_schools()
