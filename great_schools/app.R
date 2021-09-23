@@ -135,22 +135,25 @@ server <- function(input, output, session) {
             leaflet::clearControls() %>%
             leaflet.extras::removeDrawToolbar() %>% #toolbar doesn't clear?
             leaflet::addCircleMarkers(data = schools_rv(),
-                                      fillColor = "black",
+                                      fillColor = "blue",
                                       radius = 1,
                                       label = ~name)
         
+        #schools table
+        output$schools_table = DT::renderDT({
+            DT::datatable(schools_rv() %>% 
+                dplyr::select(c("name", "type", "level-codes", "level", "street", "city", "state", "lat", "lon", "district-name", "rating", "year")))
+            #     sf::st_drop_geometry(),
+            # rownames = FALSE,
+            # options = list(searching = FALSE, pageLength = 10))
+            # colnames = c("School", "Type", "Grades"))
+        })
+        
+
     })
     
-    #schools table
-    output$schools_table = DT::renderDT({
-        DT::datatable(schools_rv() %>%
-                          dplyr::select(c("name", "type", "level-codes", "level", "street", "city", "state", "lat", "lon",
-                                          "district-name", "rating", "year")) %>%
-                          sf::st_drop_geometry(),
-                      rownames = FALSE,
-                      options = list(searching = FALSE, pageLength = 10))
-        # colnames = c("School", "Type", "Grades"))
-    })
+
+    
     
 
     
