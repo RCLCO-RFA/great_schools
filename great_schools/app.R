@@ -36,7 +36,9 @@ server <- function(input, output, session) {
                                            markerOptions = F,
                                            circleMarkerOptions = F,
                                            rectangleOptions = F,
-                                           polygonOptions=drawPolygonOptions(showArea=TRUE),
+                                           polygonOptions=drawPolygonOptions(showArea=TRUE,
+                                                                             metric = FALSE,
+                                                                             shapeOptions = drawShapeOptions(lineCap = NULL)),
                                            # drawPolygonOptions(showArea = TRUE, metric = FALSE,
                                            #                    shapeOptions = drawShapeOptions(), repeatMode = FALSE),
                                            editOptions = editToolbarOptions(edit = F,
@@ -120,8 +122,10 @@ server <- function(input, output, session) {
         
         #This finds the shape in the database, spatial joins with great schools, if data does not exist for those zip codes, it queries the great schools api
         api_url = rclcoData::build_api_url(paste0('great_schools/great_schools?custom_shape=', get_shape_name))
+        Sys.sleep(1)
         schools_df = sf::st_read(api_url)
         schools_rv(schools_df)
+        print(schools_rv())
         
         #update map with schools
         map_new <- leaflet::leafletProxy("schools_map", session = session)
@@ -129,9 +133,9 @@ server <- function(input, output, session) {
             leaflet::clearMarkers() %>%
             leaflet::clearShapes() %>%
             leaflet::clearControls() %>%
-            leaflet.extras::removeDrawToolbar() %>%
+            leaflet.extras::removeDrawToolbar() %>% #toolbar doesn't clear?
             leaflet::addCircleMarkers(data = schools_rv(),
-                                      fillColor = "blue",
+                                      fillColor = "black",
                                       radius = 1,
                                       label = ~name)
         
@@ -143,10 +147,12 @@ server <- function(input, output, session) {
                           dplyr::select(c("name", "type", "level-codes", "level", "street", "city", "state", "lat", "lon",
                                           "district-name", "rating", "year")) %>%
                           sf::st_drop_geometry(),
-                          rownames = FALSE,
+                      rownames = FALSE,
                       options = list(searching = FALSE, pageLength = 10))
         # colnames = c("School", "Type", "Grades"))
     })
+    
+
     
 }
 
