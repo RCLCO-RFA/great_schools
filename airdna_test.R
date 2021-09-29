@@ -1,26 +1,44 @@
+# devtools::install_github('RCLCO-RFA/rclcoAnalytics')
+# rclcoAnalytics::fetch_custom_shape('scottie_t')
+library(tidyverse)
+library(rclcoData)
+
+search <- rclcoAnalytics::fetch_airdna_market_search(
+  p_number = '09-REEPG.0009',
+  task_number = 20,
+  email = 'dschoewe@rclco.com',
+  search_term = 'punta cana')
+
 p_number = '09-REEPG.0009'
 task_number = 20
-email = 'sstoltzman@rclco.com'
-metric = 'adr'
-city_id = 59380
-bedrooms = 3
-start_year = 2021
+email = 'dschoewe@rclco.com'
+metric = 'revenue'
+city_id = 88484
+bedrooms = c(1,2,3,4)
+start_year = 2018
+
+#review function
+?rclcoAnalytics::fetch_airdna_metrics
+
+revenue_output <- NULL
+for (i in bedrooms){
+  test_revenue <- rclcoAnalytics::fetch_airdna_metrics(p_number = p_number,
+                                                       task_number = task_number,
+                                                       email = email,
+                                                       metric = metric,
+                                                       city_id = city_id,
+                                                       bedrooms = i,
+                                                       start_year = start_year) %>% 
+    dplyr::mutate(bedrooms = i)
+  revenue_output <- rbind(revenue_output, test_revenue)
+  assign("revenue_output", revenue_output)
+}
 
 
-api_url = rclcoData::build_api_url(paste0('airdna/monthly_metrics?p_number=', 
-                                          p_number,
-                                          "&task_number=",
-                                          task_number,
-                                          "&email=",
-                                          email,
-                                          "&metric=",
-                                          metric,
-                                          "&city_id=",
-                                          city_id,
-                                          "&bedrooms=",
-                                          bedrooms,
-                                          '&start_year=',
-                                          start_year))
 
-airdna_df = jsonlite::fromJSON(api_url)
-data = tibble::as_tibble(airdna_df$results)
+write.csv(revenue_output, "revenue_output_punta_ana.csv")
+
+
+
+
+
